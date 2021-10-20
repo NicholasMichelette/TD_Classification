@@ -89,10 +89,11 @@ def find_coord_range(points):
             elif p[i] < min[i]:
                 min[i] = p[i]
     r = []
-    r.append(np.add(max, 0.000001))
-    r.append(np.add(min, -0.000001))
+    r.append(np.add(max, 0.001))
+    r.append(np.add(min, -0.001))
 
     return r
 
-voxelize(pr.read_points('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/data_raw/ModelNet40/bench/train/bench_0001.off'), 32)
+#voxelize(pr.read_points('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/data_raw/ModelNet40/bench/train/bench_0001.off'), 32)
 #voxelize(pr.read_points('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/data_raw/ModelNet40/toilet/train/toilet_0322.off'), 32)
+voxelize(pr.read_points('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/data_raw/ModelNet40/airplane/train/airplane_0001.off'), 32)
