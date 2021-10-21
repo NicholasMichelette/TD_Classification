@@ -7,6 +7,6 @@ from pyntcloud import PyntCloud as pc
 
 def read_points(filepath):
     test = pc.from_file(filepath)
-    vert = test.get_sample(name='mesh_random', n=50000).to_numpy()
+    vert = test.get_sample(name='mesh_random', n=25000).to_numpy()
     return vert
 

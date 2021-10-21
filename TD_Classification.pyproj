@@ -23,11 +23,17 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="module1.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Voxel\voxelizer.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pointreader.py" />
     <Compile Include="Voxel\voxelize_raw_data.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Voxel\__init__.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="__init__.py">

@@ -22,7 +22,10 @@ def voxelize(points, size): # points must be in the format of a numpy array of a
     points_norm = points_norm.astype(int)
     voxel_grid_tf = np.zeros((size, size, size), dtype=bool)
     for p in points_norm:
-        voxel_grid_tf[p[0], p[1], p[2]] = True
+        p0 = max(0, min(p[0], 31))
+        p1 = max(0, min(p[1], 31))
+        p2 = max(0, min(p[2], 31))
+        voxel_grid_tf[p0, p1, p2] = True
     
     return voxel_grid_tf
 
@@ -63,6 +66,13 @@ def find_coord_range(points):
     return r
 
 
+def swap(pointcloud):
+    newcloud = []
+    for i in pointcloud:
+        newcloud.append([i[1], i[0], i[2]])
+    newcloud = np.asarray(newcloud)
+
+
 # For testing purposes
 if __name__ == "__main__":
     ti = time.time()
@@ -73,6 +83,10 @@ if __name__ == "__main__":
     fig = plt.figure()
     ax = plt.axes(projection = '3d')
     ax.grid(True)
-    ax.voxels(voxel_grid_tf)
+    ti = time.time()
+    t = np.rot90(voxel_grid_tf, k=1, axes=(0, 1))
+    print(time.time() - ti)
+    ax.voxels(t)
+    
     plt.show()
     
