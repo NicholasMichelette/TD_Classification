@@ -26,7 +26,13 @@
     <Compile Include="module1.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Voxel\predict.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Voxel\TD_VoxNet.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Voxel\test.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Voxel\train.py">
@@ -61,6 +67,9 @@
     <Folder Include="data_raw\" />
     <Folder Include="Point\" />
     <Folder Include="Voxel\" />
+    <Folder Include="Voxel\models\" />
+    <Folder Include="Voxel\logs\" />
+    <Folder Include="Voxel\predict_tests\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

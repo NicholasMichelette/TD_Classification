@@ -13,6 +13,7 @@ parser.add_argument("dataset", help="Name of dataset to use to train. Must have 
 parser.add_argument("--rotations", nargs='?', help="How many rotations an object has. Can be found at the end of file names in data\classname\train",
                     default=12, type=int)
 parser.add_argument("--epochs", nargs='?', default=8, type=int)
+parser.add_argument("--save_epochs", nargs='?', default=10, type=int)
 parser.add_argument("--batchsize", nargs='?', default=32, type=int)
 parser.add_argument("--validation_split", nargs='?', default=0.1, type=float)
 parser.add_argument("--manual_validation", nargs='?', default=True, type=bool)
@@ -80,15 +81,21 @@ def main():
             logpath = os.path.join(os.getcwd(), "logs", save_name + ".csv")
             logger = CSVLogger(logpath, separator=",", append=True)
             if args.manual_validation:
+                f = open(os.path.join(os.getcwd(), "logs", "val_" + save_name + ".csv"), 'w')
+                f.write("epoch,categorical_accuracy,loss\n")
                 for i in range(args.epochs):
                     epoch_str = str(i + 1) + "/" + str(args.epochs)
                     print("Epoch " + epoch_str + ":")
                     model.run_eagerly=False
                     model.fit(train_x, train_y, batch_size=args.batchsize, epochs=1, callbacks=[logger])
                     model.run_eagerly=True
-                    model.evaluate(val_x, val_y, batch_size=args.batchsize)
+                    eval = model.evaluate(val_x, val_y, batch_size=args.batchsize)
+                    f.write(str(i + 1) + "," + str(eval[1]) + "," + str(eval[0]) + "\n")
+                    if i % args.save_epochs == 0 and i != 0:
+                        model.save(os.getcwd() + "\\models\\" + save_name)
                     gc.collect()
                     tf.keras.backend.clear_session()
+                f.close()
             else:
                 model.fit(train_x, train_y, batch_size=args.batchsize, validation_split=args.validation_split, epochs=args.epochs, callbacks=[logger])
             model.save(os.getcwd() + "\\models\\" + save_name)
