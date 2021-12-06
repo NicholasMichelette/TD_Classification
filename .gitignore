@@ -115,3 +115,5 @@ dmypy.json
 
 data_raw/
 data/
+Voxel/models
+Voxel/logs

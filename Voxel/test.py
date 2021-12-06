@@ -2,6 +2,8 @@ import argparse
 import os
 import numpy as np
 import tensorflow as tf
+from TD_VoxNet import TVNModel
+from keras.metrics import categorical_accuracy
 from keras.models import load_model
 
 
@@ -27,18 +29,17 @@ def main():
             files = os.listdir(cdp)
             for file in files:
                 fp = cdp + "\\" + file
-                test_x = test_x + list(np.load(fp))
-                for j in range(int(args.rotations)):
-                    test_y.append(class_matrix)
+                test_x.append(np.expand_dims(np.load(fp), axis=(4)))
+                test_y.append(class_matrix)
 
         test_x = np.asarray(test_x)
         test_y = np.asarray(test_y)
-        test_x = np.expand_dims(test_x, axis=(4))
-        model = load_model(os.getcwd() + "\\models\\" + args.model)
+        model = TVNModel(load_model(os.getcwd() + "\\models\\" + args.model, compile=False))
+        opti = tf.keras.optimizers.Adam(learning_rate = 0.001, clipnorm=1)
+        model.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[categorical_accuracy], run_eagerly=True)
         with tf.device('/GPU:0'):
             model.evaluate(test_x, test_y, batch_size=32)
             
-
 
 if __name__ == "__main__":
     main()
