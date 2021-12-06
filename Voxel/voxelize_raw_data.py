@@ -35,8 +35,10 @@ def voxelize_data(dataset, num_rotations=12, num_voxels=32):
                 rdat = trdp + '/' + d
                 dat = tdp + '/' + d
                 dat = dat.strip('.off') + '___' + str(num_rotations)
-                cloud = pr.read_points(rdat)
-                np.save(dat, get_rotations(cloud, num_rotations))
+                da = d.strip('.off') + '___' + str(num_rotations) + '.npy'
+                if da not in completed:
+                    cloud = pr.read_points(rdat)
+                    np.save(dat, get_rotations(cloud, num_rotations))
         print("Done: ", ot)
 
 

@@ -26,6 +26,12 @@
     <Compile Include="module1.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Voxel\TD_VoxNet.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Voxel\train.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Voxel\voxelizer.py">
       <SubType>Code</SubType>
     </Compile>
