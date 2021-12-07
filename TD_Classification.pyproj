@@ -26,6 +26,12 @@
     <Compile Include="module1.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Point\TD_PointNet.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Point\preprocess.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Voxel\predict.py">
       <SubType>Code</SubType>
     </Compile>
@@ -66,6 +72,7 @@
   <ItemGroup>
     <Folder Include="data_raw\" />
     <Folder Include="Point\" />
+    <Folder Include="Point\data\" />
     <Folder Include="Voxel\" />
     <Folder Include="Voxel\models\" />
     <Folder Include="Voxel\logs\" />

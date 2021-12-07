@@ -77,7 +77,7 @@ def swap(pointcloud):
 if __name__ == "__main__":
     ti = time.time()
     #voxel_grid_tf = voxelize(pr.read_points('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/data_raw/ModelNet40/bench/train/bench_0001.off'), 32)
-    voxel_grid_tf = voxelize(pr.read_points('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/data_raw/ModelNet40/toilet/train/toilet_0001.off'), 32)
+    voxel_grid_tf = voxelize(pr.read_points('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/data_raw/ModelNet40/toilet/train/toilet_0001.off', 25000), 32)
     #voxel_grid_tf = voxelize(pr.read_points('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/data_raw/ModelNet40/airplane/train/airplane_0001.off'), 32)
     print(time.time() - ti)
     fig = plt.figure()

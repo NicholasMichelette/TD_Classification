@@ -13,7 +13,12 @@ sys.path.append(parentdir)
 import pointreader as pr
 
 
-def voxelize_data(dataset, num_rotations=12, num_voxels=32):
+parser = argparse.ArgumentParser()
+parser.add_argument('Dataset', type=str, help='Dataset to voxelize within the data_raw directory.')
+parser.add_argument('num_points', default=25000, type=int, help='Number of points to sample from the data.')
+
+
+def voxelize_data(dataset, num_points=25000, num_rotations=12, num_voxels=32):
     datapath = os.path.join(sys.path[0], "data")
     Path(datapath).mkdir(parents=True, exist_ok=True)
     datapath = os.path.join(datapath, dataset)
@@ -37,7 +42,7 @@ def voxelize_data(dataset, num_rotations=12, num_voxels=32):
                 dat = dat.strip('.off') + '___' + str(num_rotations)
                 da = d.strip('.off') + '___' + str(num_rotations) + '.npy'
                 if da not in completed:
-                    cloud = pr.read_points(rdat)
+                    cloud = pr.read_points(rdat, num_points)
                     np.save(dat, get_rotations(cloud, num_rotations))
         print("Done: ", ot)
 
@@ -84,13 +89,9 @@ def rotate(point, origin, cos, sin):
     return qx, qy
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument('Dataset', type=str, help='Dataset to voxelize within the data_raw directory.')
-
-
 if __name__ == "__main__":
     args = parser.parse_args()
-    voxelize_data(args.Dataset)
+    voxelize_data(args.Dataset, num_points=args.num_points)
     
     #temp = pr.read_points('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/data_raw/ModelNet40/bench/train/bench_0001.off')
     #t = time.time()

@@ -38,7 +38,7 @@ def main():
         num_classes = len(classes)
         for i in range(num_classes):
             cdp = os.path.join(datapath, classes[i], "train")
-            class_matrix = np.zeros(10)
+            class_matrix = np.zeros(num_classes)
             class_matrix[i] = 1
             files = os.listdir(cdp)
             if args.manual_validation:
