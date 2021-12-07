@@ -32,6 +32,9 @@
     <Compile Include="Point\preprocess.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Point\train.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Voxel\predict.py">
       <SubType>Code</SubType>
     </Compile>

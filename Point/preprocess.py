@@ -11,7 +11,6 @@ import numpy as np
 parser = argparse.ArgumentParser()
 parser.add_argument('dataset', type=str, help='Dataset to preprocess.')
 parser.add_argument('--num_points_in', default=1024, type=int, help='Number of points to sample from the data.')
-parser.add_argument('--parallel', default=False, type=bool, help='Allows for multiprocessing.')
 args = parser.parse_args()
 
 
