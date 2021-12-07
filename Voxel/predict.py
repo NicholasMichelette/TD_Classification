@@ -2,7 +2,6 @@ import argparse
 import os
 import numpy as np
 import tensorflow as tf
-import timeit
 from keras.models import load_model
 
 
@@ -17,8 +16,8 @@ def predict_from_model(model, object):
 
 
 def main():
-    model = load_model(os.getcwd() + "\\models\\" + args.model)
-    object = np.load(os.getcwd() + "\\" + args.datafile)
+    model = load_model(os.path.join(os.getcwd(), "models", args.model))
+    object = np.load(os.path.load(os.getcwd(), args.datafile))
     object = np.expand_dims(object, axis=(4))
     predict_list = []
     with tf.device('/GPU:0'):
@@ -36,7 +35,4 @@ def main():
 
 
 if __name__ == "__main__":
-    start = timeit.default_timer()
     main()
-    stop = timeit.default_timer()
-    print(stop - start)

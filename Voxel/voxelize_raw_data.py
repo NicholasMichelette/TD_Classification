@@ -14,26 +14,26 @@ import pointreader as pr
 
 
 def voxelize_data(dataset, num_rotations=12, num_voxels=32):
-    datapath = sys.path[0] + "/data"
+    datapath = os.path.join(sys.path[0], "data")
     Path(datapath).mkdir(parents=True, exist_ok=True)
-    datapath = datapath + '/' + dataset
+    datapath = os.path.join(datapath, dataset)
     Path(datapath).mkdir(parents=True, exist_ok=True)
-    raw_datapath = sys.path[0].strip('/\Voxel') + '/data_raw/' + dataset
+    raw_datapath = os.path.join(sys.path[0].strip('/\Voxel'), 'data_raw', dataset)
     object_types = os.listdir(raw_datapath)
     for ot in object_types:
-        rdp = raw_datapath + '/' + ot
-        dp = datapath + '/' + ot
+        rdp = os.path.join(raw_datapath, ot)
+        dp = os.path.join(datapath, ot)
         Path(dp).mkdir(parents=True, exist_ok=True)
         test_train = os.listdir(rdp)
         for t in test_train:
-            trdp = rdp + '/' + t
-            tdp = dp + '/' + t 
+            trdp = os.path.join(rdp, t)
+            tdp = os.path.join(dp, t) 
             Path(tdp).mkdir(parents=True, exist_ok=True)
             data = os.listdir(trdp)
             completed = os.listdir(tdp)
             for d in data:
-                rdat = trdp + '/' + d
-                dat = tdp + '/' + d
+                rdat = os.path.join(trdp, d)
+                dat = os.path.join(tdp, d)
                 dat = dat.strip('.off') + '___' + str(num_rotations)
                 da = d.strip('.off') + '___' + str(num_rotations) + '.npy'
                 if da not in completed:

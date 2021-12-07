@@ -16,25 +16,25 @@ args = parser.parse_args()
 
 
 def main():
-    datapath = os.getcwd() + "\\data\\" + args.dataset
+    datapath = os.path.join(os.getcwd(), "data", args.dataset)
     if os.path.isdir(datapath):
         test_x = []
         test_y = []
         classes = os.listdir(datapath)
         num_classes = len(classes)
         for i in range(num_classes):
-            cdp = datapath + "\\" + classes[i] + "\\test"
+            cdp = os.path.join(datapath, classes[i], "test")
             class_matrix = np.zeros(10)
             class_matrix[i] = 1
             files = os.listdir(cdp)
             for file in files:
-                fp = cdp + "\\" + file
+                fp = os.path.join(cdp, file)
                 test_x.append(np.expand_dims(np.load(fp), axis=(4)))
                 test_y.append(class_matrix)
 
         test_x = np.asarray(test_x)
         test_y = np.asarray(test_y)
-        model = TVNModel(load_model(os.getcwd() + "\\models\\" + args.model, compile=False))
+        model = TVNModel(load_model(os.path.join(os.getcwd(), "models", args.model), compile=False))
         opti = tf.keras.optimizers.Adam(learning_rate = 0.001, clipnorm=1)
         model.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[categorical_accuracy], run_eagerly=True)
         with tf.device('/GPU:0'):
