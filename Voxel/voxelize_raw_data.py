@@ -15,7 +15,7 @@ import pointreader as pr
 
 parser = argparse.ArgumentParser()
 parser.add_argument('Dataset', type=str, help='Dataset to voxelize within the data_raw directory.')
-parser.add_argument('num_points', default=25000, type=int, help='Number of points to sample from the data.')
+parser.add_argument('--num_points', default=25000, type=int, help='Number of points to sample from the data.')
 
 
 def voxelize_data(dataset, num_points=25000, num_rotations=12, num_voxels=32):
@@ -26,6 +26,7 @@ def voxelize_data(dataset, num_points=25000, num_rotations=12, num_voxels=32):
     raw_datapath = os.path.join(sys.path[0].strip('/\Voxel'), 'data_raw', dataset)
     object_types = os.listdir(raw_datapath)
     for ot in object_types:
+        print("Start: ", ot)
         rdp = os.path.join(raw_datapath, ot)
         dp = os.path.join(datapath, ot)
         Path(dp).mkdir(parents=True, exist_ok=True)
@@ -39,8 +40,8 @@ def voxelize_data(dataset, num_points=25000, num_rotations=12, num_voxels=32):
             for d in data:
                 rdat = os.path.join(trdp, d)
                 dat = os.path.join(tdp, d)
-                dat = dat.strip('.off') + '___' + str(num_rotations)
-                da = d.strip('.off') + '___' + str(num_rotations) + '.npy'
+                dat = os.path.splitext(dat)[0] + '___' + str(num_rotations)
+                da = os.path.splitext(d)[0] + '___' + str(num_rotations) + '.npy'
                 if da not in completed:
                     cloud = pr.read_points(rdat, num_points)
                     np.save(dat, get_rotations(cloud, num_rotations))
