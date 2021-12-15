@@ -1,9 +1,10 @@
 import numpy as np
 import os
+import math
 import argparse
 import tensorflow as tf
 from TD_PointNet import TPointNet
-from keras.callbacks import CSVLogger
+from keras.callbacks import CSVLogger, LearningRateScheduler
 
 
 parser = argparse.ArgumentParser()
@@ -22,6 +23,10 @@ def unison_shuffled_copies(a, b):
 	assert len(a) == len(b)
 	p = np.random.permutation(len(a))
 	return a[p], b[p]
+
+
+def step_decay(epoch):
+	return 0.001 * math.pow(0.5, math.floor((1+epoch)/20))
 
 
 def main():
@@ -59,8 +64,9 @@ def main():
 	if not os.path.exists(os.path.join(os.getcwd(), "logs")):
 		os.mkdir(os.path.join(os.getcwd(), "logs"))
 	logger = CSVLogger(logpath, separator=",", append=True)
+	lrate = LearningRateScheduler(step_decay)
 	with tf.device('/GPU:0'):
-		model.fit(train_x, train_y, batch_size=args.batchsize, epochs=args.epochs, validation_split=args.validation_split, callbacks=[logger])
+		model.fit(train_x, train_y, batch_size=args.batchsize, epochs=args.epochs, validation_split=args.validation_split, callbacks=[logger, lrate])
 		model.save(os.path.join(savepath, save_name))
 		
 

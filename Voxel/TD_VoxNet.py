@@ -70,4 +70,5 @@ class TVoxNet:
         opti = tf.keras.optimizers.Adam(learning_rate = self.learning_rate, clipnorm=1)
         model.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[categorical_accuracy])
         self.model = model
+        print(model.summary())
         return model

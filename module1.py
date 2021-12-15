@@ -10,6 +10,7 @@ if __name__ == '__main__':
 import pointreader as pr
 import struct
 import nltk
+import matplotlib.pyplot as plt
 
 #print(np.load('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/data_raw/bench_0001.npy')[12])
 
@@ -64,9 +65,35 @@ import nltk
 #for s in sad:
 #    print(s, ": ", nltk.corpus.wordnet.synset_from_pos_and_offset('n', int(s)))
 
-ds = ["train_x", "train_y"]
-dets = ["ModelNet10_12_train_x", "ModelNet10_12_train_y"]
-dets2 = ["ModelNet10_12_test_", "ModelNet10_12_test_y"]
-for d in dets:
-    if (not ds[0] in d) and (not ds[1] in d):
-        print("NO")
+#ds = ["train_x", "train_y"]
+#dets = ["ModelNet10_12_train_x", "ModelNet10_12_train_y"]
+#dets2 = ["ModelNet10_12_test_", "ModelNet10_12_test_y"]
+#for d in dets:
+#    if (not ds[0] in d) and (not ds[1] in d):
+#        print("NO")
+
+
+#vox = np.load('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/Voxel/data/ModelNet10/toilet/train/toilet_0001___12.npy')
+#for v in vox:
+#    fig = plt.figure()
+#    ax = plt.axes(projection = '3d')
+#    ax.grid(True)
+#    ti = time.time()
+#    t = np.rot90(v, k=1, axes=(0, 1))
+#    ax.voxels(t)
+    
+#    plt.show()
+
+
+points = np.load('J:/Documents/School/2021 fall/ML2/Project/TD_Classification/Point/data/ModelNet40/temp/chair_1024_test_x.npy')
+ax = plt.axes(projection = '3d')
+x = []
+y = []
+z = []
+p = points[0]
+for coord in p:
+    x.append(coord[0])
+    y.append(coord[1])
+    z.append(coord[2])
+ax.scatter3D(x, y, z)
+plt.show()

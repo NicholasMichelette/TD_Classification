@@ -20,12 +20,12 @@ def main():
 	if os.path.exists(test_x_filename):
 		test_x = np.load(test_x_filename)
 	else:
-		print("test_x.npy Data missing for dataset " + args.dataset + " with " + str(args.num_points_in) + "input points. Please run preprocess.py")
+		print("test_x.npy Data missing for dataset " + args.dataset + " with " + str(num_points_in) + "input points. Please run preprocess.py")
 		quit()
 	if os.path.exists(test_y_filename):
 		test_y = np.load(test_y_filename)
 	else:
-		print("test_y.npy Data missing for dataset " + args.dataset + " with " + str(args.num_points_in) + "input points. Please run preprocess.py")
+		print("test_y.npy Data missing for dataset " + args.dataset + " with " + str(num_points_in) + "input points. Please run preprocess.py")
 		quit()
 
 	model = load_model(os.path.join(os.getcwd(), "models", args.model))

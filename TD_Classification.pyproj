@@ -29,6 +29,9 @@
     <Compile Include="module1.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="data_combiner.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Point\TD_PointNet.py">
       <SubType>Code</SubType>
     </Compile>
@@ -39,6 +42,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Point\train.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Point\visualize_data.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="shapenet_fixer.py">
@@ -54,6 +60,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Voxel\train.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Voxel\visualize_data.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Voxel\voxelizer.py">
