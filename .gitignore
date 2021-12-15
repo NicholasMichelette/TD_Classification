@@ -115,3 +115,10 @@ dmypy.json
 
 data_raw/
 data/
+Voxel/models
+Voxel/logs
+Point/models
+logs/
+Voxel/cdata
+log_eval/
+

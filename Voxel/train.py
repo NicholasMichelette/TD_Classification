@@ -1,8 +1,11 @@
 import argparse
 import os
+import gc
 import numpy as np
 import tensorflow as tf
-from TD_VoxNet import TVoxNet
+from TD_VoxNet import TVoxNet, TVNModel
+from keras.metrics import categorical_accuracy
+from keras.callbacks import CSVLogger
 
 
 parser = argparse.ArgumentParser()
@@ -10,8 +13,10 @@ parser.add_argument("dataset", help="Name of dataset to use to train. Must have 
 parser.add_argument("--rotations", nargs='?', help="How many rotations an object has. Can be found at the end of file names in data\classname\train",
                     default=12, type=int)
 parser.add_argument("--epochs", nargs='?', default=8, type=int)
+parser.add_argument("--save_epochs", nargs='?', default=10, type=int)
 parser.add_argument("--batchsize", nargs='?', default=32, type=int)
 parser.add_argument("--validation_split", nargs='?', default=0.1, type=float)
+parser.add_argument("--manual_validation", nargs='?', default=True, type=bool)
 args = parser.parse_args()
 
 
@@ -23,33 +28,110 @@ def unison_shuffled_copies(a, b):
 
 
 def main():
-    datapath = os.getcwd() + "\\data\\" + args.dataset
-    if os.path.isdir(datapath):
+    datapath = os.path.join(os.getcwd(), "data", args.dataset)
+    compiled_datapath = os.path.join(os.getcwd(), "cdata", args.dataset)
+    train_x_filename = os.path.join(compiled_datapath, args.dataset + "_" + str(args.rotations) + "_" + "train_x.npy")
+    train_y_filename = os.path.join(compiled_datapath, args.dataset + "_" + str(args.rotations) + "_" + "train_y.npy")
+    val_x_filename = os.path.join(compiled_datapath, args.dataset + "_" + str(args.rotations) + "_" + "val_x.npy")
+    val_y_filename = os.path.join(compiled_datapath, args.dataset + "_" + str(args.rotations) + "_" + "val_y.npy")
+    train_x = []
+    train_y = []
+    val_x = []
+    val_y = []
+    if os.path.exists(compiled_datapath) and os.path.exists(train_x_filename) and os.path.exists(train_y_filename) and os.path.exists(val_x_filename) and os.path.exists(val_y_filename):
+        train_x = np.load(train_x_filename)
+        train_y = np.load(train_y_filename)
+        val_x = np.load(val_x_filename)
+        val_y = np.load(val_y_filename)
+    elif os.path.isdir(datapath):
+        cdata_path = os.path.join(os.getcwd(), "cdata")
+        if not os.path.exists(cdata_path):
+            os.mkdir(os.path.join(os.getcwd(), "cdata"))
+        if not os.path.exists(compiled_datapath):
+            os.mkdir(compiled_datapath)
         train_x = []
         train_y = []
+        val_x = []
+        val_y = []
         classes = os.listdir(datapath)
         num_classes = len(classes)
         for i in range(num_classes):
-            cdp = datapath + "\\" + classes[i] + "\\train"
-            class_matrix = np.zeros(10)
+            print("Loading: ", classes[i])
+            cdp = os.path.join(datapath, classes[i], "train")
+            class_matrix = np.zeros(num_classes)
             class_matrix[i] = 1
             files = os.listdir(cdp)
-            for file in files:
-                fp = cdp + "\\" + file
-                train_x = train_x + list(np.load(fp))
-                for j in range(int(args.rotations)):
-                    train_y.append(class_matrix)
-    
+            if args.manual_validation:
+                fileslen = len(files)
+                train_set = int(fileslen*(1 - args.validation_split))
+                for fileindex in range(train_set):
+                    file = files[fileindex]
+                    fp = os.path.join(cdp, file)
+                    train_x = train_x + list(np.load(fp))
+                    for j in range(int(args.rotations)):
+                        train_y.append(class_matrix)
+                for fileindex in range(train_set, fileslen):
+                    file = files[fileindex]
+                    fp = os.path.join(cdp, file)
+                    val_x.append(np.expand_dims(np.load(fp), axis=(4)))
+                    val_y.append(class_matrix)
+            else:
+                for file in files:
+                    fp = os.path.join(cdp, file)
+                    train_x = train_x + list(np.load(fp))
+                    for j in range(int(args.rotations)):
+                        train_y.append(class_matrix)
         train_x = np.asarray(train_x)
         train_y = np.asarray(train_y)
-        train_x = np.expand_dims(train_x, axis=(4))
-        train_x, train_y = unison_shuffled_copies(train_x, train_y)
-        vn = TVoxNet(num_classes, train_x.shape[1:])
+        val_x = np.asarray(val_x)
+        val_y = np.asarray(val_y)
+        np.save(os.path.splitext(train_x_filename)[0], train_x)
+        np.save(os.path.splitext(train_y_filename)[0], train_y)
+        np.save(os.path.splitext(val_x_filename)[0], val_x)
+        np.save(os.path.splitext(val_y_filename)[0], val_y)
+
+    else:
+        print("Dataset not voxelized. Please run voxelize_raw_data.py.")
+        quit()
+    
+    num_classes = len(train_y[0])
+    train_x = np.expand_dims(train_x, axis=(4))
+    train_x, train_y = unison_shuffled_copies(train_x, train_y)
+        
+    vn = TVoxNet(num_classes, train_x.shape[1:])
+    if args.manual_validation:
+        model = vn.create_tvn_model()
+    else:
         model = vn.create_model()
-        #model.summary()
-        with tf.device('/GPU:0'):
-            model.fit(train_x, train_y, batch_size=args.batchsize, validation_split=args.validation_split, epochs=args.epochs)
-            model.save(os.getcwd() + "\\models\\" + args.dataset + "_" + str(args.rotations) + "_" + str(args.epochs))
+    with tf.device('/GPU:0'):
+        savepath = os.path.join(os.getcwd(), "models")
+        if not os.path.exists(savepath):
+            os.mkdir(savepath)
+        saved_models = os.listdir(savepath)
+        save_name = args.dataset + "_" + str(args.rotations) + "_" + str(args.epochs) + "_"
+        while save_name in saved_models:
+            save_name = save_name + str(1)
+        logpath = os.path.join(os.getcwd(), "logs", save_name + ".csv")
+        logger = CSVLogger(logpath, separator=",", append=True)
+        if args.manual_validation:
+            f = open(os.path.join(os.getcwd(), "logs", "val_" + save_name + ".csv"), 'w')
+            f.write("epoch,categorical_accuracy,loss\n")
+            for i in range(args.epochs):
+                epoch_str = str(i + 1) + "/" + str(args.epochs)
+                print("Epoch " + epoch_str + ":")
+                model.run_eagerly=False
+                model.fit(train_x, train_y, batch_size=args.batchsize, epochs=1, callbacks=[logger])
+                model.run_eagerly=True
+                eval = model.evaluate(val_x, val_y, batch_size=args.batchsize)
+                f.write(str(i + 1) + "," + str(eval[1]) + "," + str(eval[0]) + "\n")
+                if i % args.save_epochs == 0 and i != 0:
+                    model.save(os.path.join(os.getcwd(), "models", save_name))
+                gc.collect()
+                tf.keras.backend.clear_session()
+            f.close()
+        else:
+            model.fit(train_x, train_y, batch_size=args.batchsize, validation_split=args.validation_split, epochs=args.epochs, callbacks=[logger])
+        model.save(os.path.join(savepath, "models", save_name))
 
 if __name__ == "__main__":
     main()
