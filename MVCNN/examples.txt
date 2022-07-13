@@ -1,0 +1,18 @@
+for webcam stuff:
+
+python .\gatherer.py dataset_name class_name
+python .\train_image.py dataset_name --vizualize True [--neural_network 1]
+python .\ui.py dataset_name model_name
+
+
+basic training/testing:
+
+python .\train_image.py dataset_name --vizualize True [--neural_network 1] --epochs 16
+python .\test_image.py dataset_name model_name
+# PREDICT DOES NOT WORK WITH MNIST MAY NOT WORK WITH OTHER GRAYSCALE IMAGES
+python .\test_image.py dataset_name model_name --predict t  
+
+real example:
+python .\train_image.py m40_10_raw --vizualize True --batchsize 96 --epochs 16
+python .\test_image.py m40_10_raw --batchsize 12 227x227_
+python .\test_image.py m40_10_raw --batchsize 12 227x227_ --predict True

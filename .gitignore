@@ -120,5 +120,9 @@ Voxel/logs
 Point/models
 logs/
 Voxel/cdata
+Voxel/data/
 log_eval/
+MVCNN/data/
+MVCNN/models/
+MVCNN/MVCNN.zip
 
