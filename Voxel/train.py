@@ -3,6 +3,7 @@ import os
 import gc
 import numpy as np
 import tensorflow as tf
+import time
 from TD_VoxNet import TVoxNet, TVNModel
 from keras.metrics import categorical_accuracy
 from keras.callbacks import CSVLogger
@@ -17,6 +18,7 @@ parser.add_argument("--save_epochs", nargs='?', default=10, type=int)
 parser.add_argument("--batchsize", nargs='?', default=32, type=int)
 parser.add_argument("--validation_split", nargs='?', default=0.1, type=float)
 parser.add_argument("--manual_validation", nargs='?', default=True, type=bool)
+parser.add_argument("--voxels", nargs='?', default=32, type=int)
 args = parser.parse_args()
 
 
@@ -100,38 +102,45 @@ def main():
         
     vn = TVoxNet(num_classes, train_x.shape[1:])
     if args.manual_validation:
-        model = vn.create_tvn_model()
+        model = vn.create_tvn_model(args.voxels)
     else:
         model = vn.create_model()
     with tf.device('/GPU:0'):
-        savepath = os.path.join(os.getcwd(), "models")
+        loggingpath = os.path.join(os.getcwd(), 'thesis')
+        savepath = os.path.join(loggingpath, "models")
         if not os.path.exists(savepath):
             os.mkdir(savepath)
         saved_models = os.listdir(savepath)
-        save_name = args.dataset + "_" + str(args.rotations) + "_" + str(args.epochs) + "_"
+        save_name = args.dataset + "_" + str(args.rotations) + "_" + str(args.voxels) + "_"
         while save_name in saved_models:
             save_name = save_name + str(1)
-        logpath = os.path.join(os.getcwd(), "logs", save_name + ".csv")
+        logpath = os.path.join(loggingpath, "logs", save_name + ".csv")
         logger = CSVLogger(logpath, separator=",", append=True)
         if args.manual_validation:
-            f = open(os.path.join(os.getcwd(), "logs", "val_" + save_name + ".csv"), 'w')
-            f.write("epoch,categorical_accuracy,loss\n")
+            f = open(os.path.join(loggingpath, "logs", "val_" + save_name + ".csv"), 'w')
+            f.write("epoch,categorical_accuracy,loss,train_time,val_time\n")
             for i in range(args.epochs):
                 epoch_str = str(i + 1) + "/" + str(args.epochs)
                 print("Epoch " + epoch_str + ":")
+                t1 = time.time()
                 model.run_eagerly=False
                 model.fit(train_x, train_y, batch_size=args.batchsize, epochs=1, callbacks=[logger])
                 model.run_eagerly=True
+                t2 = time.time() - t1
+                t1 = time.time()
                 eval = model.evaluate(val_x, val_y, batch_size=args.batchsize)
-                f.write(str(i + 1) + "," + str(eval[1]) + "," + str(eval[0]) + "\n")
+                t3 = time.time() - t1
+                f.write(str(i + 1) + "," + str(eval[1]) + "," + str(eval[0]) + "," + str(t2) + "," + str(t3) + "\n")
                 if i % args.save_epochs == 0 and i != 0:
-                    model.save(os.path.join(os.getcwd(), "models", save_name))
+                    model.save(os.path.join(loggingpath, "models", save_name))
                 gc.collect()
                 tf.keras.backend.clear_session()
             f.close()
         else:
             model.fit(train_x, train_y, batch_size=args.batchsize, validation_split=args.validation_split, epochs=args.epochs, callbacks=[logger])
         model.save(os.path.join(savepath, "models", save_name))
+
+
 
 if __name__ == "__main__":
     main()

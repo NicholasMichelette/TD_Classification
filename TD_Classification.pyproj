@@ -32,6 +32,18 @@
     <Compile Include="data_combiner.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MVCNN\fashion_mnist_to_jpg.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MVCNN\mvcnn_model.py" />
+    <Compile Include="MVCNN\test_image.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MVCNN\gatherer.py" />
+    <Compile Include="MVCNN\train_image.py" />
+    <Compile Include="MVCNN\ui.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Point\TD_PointNet.py">
       <SubType>Code</SubType>
     </Compile>
@@ -92,12 +104,22 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="data_raw\" />
+    <Folder Include="MVCNN\" />
     <Folder Include="Point\" />
     <Folder Include="Point\data\" />
     <Folder Include="Voxel\" />
     <Folder Include="Voxel\models\" />
     <Folder Include="Voxel\logs\" />
+    <Folder Include="Voxel\thesis\" />
     <Folder Include="Voxel\predict_tests\" />
+    <Folder Include="Voxel\thesis\logs_1\" />
+    <Folder Include="Voxel\thesis\logs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MVCNN\examples.txt" />
+    <Content Include="Voxel\multiple_runner.bat">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

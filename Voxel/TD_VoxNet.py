@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten, Conv3D, MaxPooling3D
+from keras.layers import Dense, Dropout, Activation, Flatten, Conv3D, MaxPooling3D, Input
 from keras.metrics import categorical_accuracy
 import keras.optimizers as opt
 from keras.engine import data_adapter
@@ -57,15 +57,24 @@ class TVoxNet:
         return model
 
 
-    def create_tvn_model(self):
+    def create_tvn_model(self, voxels=32):
         model = TVNModel()
-        model.add(Conv3D(32, (5,5,5), strides=(2,2,2), activation="relu", input_shape=self.input_shape))
+        if voxels==32:
+            model.add(Conv3D(32, (5,5,5), strides=(2,2,2), activation="relu", input_shape=self.input_shape))
+        else:
+            kernel_size = 4;
+            if voxels==8:
+                kernel_size = 3;
+            model.add(Input(shape=self.input_shape))
+            model.add(MaxPooling3D(pool_size=(32/voxels,32/voxels,32/voxels)))
+            model.add(Conv3D(voxels, (kernel_size,kernel_size,kernel_size), strides=(2,2,2), activation="relu"))
         model.add(Dropout(0.2))
-        model.add(Conv3D(32, (3,3,3), activation="relu"))
-        model.add(MaxPooling3D(pool_size=(2,2,2)))
+        model.add(Conv3D(voxels, (3,3,3), activation="relu"))
+        if voxels >= 32:
+            model.add(MaxPooling3D(pool_size=(2,2,2)))
         model.add(Flatten())
         model.add(Dropout(0.5))
-        model.add(Dense(128, activation="relu"))
+        model.add(Dense(128 * (voxels/32), activation="relu"))
         model.add(Dense(self.num_classes, activation="softmax"))
         opti = tf.keras.optimizers.Adam(learning_rate = self.learning_rate, clipnorm=1)
         model.compile(loss='categorical_crossentropy', optimizer=opti, metrics=[categorical_accuracy])
